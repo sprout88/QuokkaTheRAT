@@ -5,32 +5,36 @@ import socket
 def send_message(sock):
     message = input("Enter message: ")
     sock.send(message.encode('utf-8'))
-    print("waiting for server...")
+    print("waiting for client...")
 
 def receive_message(sock):
     data = sock.recv(1024).decode('utf-8')
     print("Received:", data)
 
-# Set up the client socket
-HOST = 'localhost'  # Use the server's IP address or hostname
-PORT = 5000  # Use the same port number as the server
+# Set up the server socket
+HOST = 'localhost'  # Use your server's IP address or hostname
+PORT = 5000  # Use a free port number
 
-print("quokkaoTALK client start...")
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.bind((HOST, PORT))
+server_socket.listen(1)  # Listen for incoming connections
 
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect((HOST, PORT))
+print("quokkaoTALK Server started. Waiting for a client to connect...")
 
-# Start sending and receiving messages
-print("Connected to the server. Start sending messages.")
+# Accept a client connection
+client_socket, client_address = server_socket.accept()
+print("Connected to client:", client_address)
 
-
-send_message(client_socket)
+# Handle the client's messages
 receive_message(client_socket)
-
 send_message(client_socket)
-receive_message(client_socket)
 
+receive_message(client_socket)
 send_message(client_socket)
-receive_message(client_socket)
 
-print("end quokkaoTALK client...")
+receive_message(client_socket)
+send_message(client_socket)
+
+# Clean up the client connection and close the server socket
+client_socket.close()
+server_socket.close()
